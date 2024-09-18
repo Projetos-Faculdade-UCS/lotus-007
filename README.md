@@ -75,3 +75,12 @@ Certifique-se de estar na pasta correta onde o arquivo `main.go` está antes de 
 ```bash
 go mod init
 
+```
+### Download
+
+Clique no link abaixo para baixar o executável da versão Alpha do agente (Lembre de instalar os requisitos antes de executar o .exe em linha de comando):
+
+[Download do agente](https://github.com/Projetos-Faculdade-UCS/lotus-007/releases/download/v0.0.0-alpha/agent.exe)
+
+
+
