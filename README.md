@@ -23,4 +23,55 @@ Com este Preview, foi possível:
 
 Essa branch servirá de base para o lançamento de um Alpha em breve.
 
+---
+
+## Compatibilidade
+
+Esta versão do agente foi testada e é compatível com:
+
+- **Windows 10**
+- **Windows 11**
+
+### Requisitos Especiais
+
+- **Desativar o antivírus**: Esta versão do agente requer que o antivírus esteja desativado, pois ela executa operações que envolvem alterações no registro do Windows e no PowerShell, o que pode ser bloqueado por ferramentas de segurança.
+
+---
+
+## Dependências
+
+Este projeto requer a seguinte dependência para funcionar corretamente:
+
+- [golang.org/x/sys](https://pkg.go.dev/golang.org/x/sys) v0.24.0
+
+Você pode instalá-la com o comando:
+
+```bash
+go get golang.org/x/sys@v0.24.0
+```
+
+## Instruções de Execução
+
+Para executar o agente, siga os passos abaixo:
+
+1. Navegue até a pasta onde o arquivo `main.go` está localizado.
+
+2. Compile o agente utilizando o comando:
+
+    ```bash
+    go build
+    ```
+
+3. Execute o agente utilizando o seguinte comando:
+
+    ```bash
+    .\agent.exe
+    ```
+
+Certifique-se de estar na pasta correta onde o arquivo `main.go` está antes de executar os comandos.
+
+**Nota**: Pode ser necessário inicializar o módulo Go caso ele não esteja configurado, utilizando o seguinte comando:
+
+```bash
+go mod init
 
