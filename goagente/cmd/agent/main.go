@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goagente/internal/data/hardware"
+	"goagente/internal/data/system"
 	"goagente/internal/logging"
 	"goagente/internal/orchestration"
 	"log"
@@ -44,4 +45,29 @@ func main() {
 	// Exibe o JSON resultante
 	fmt.Println("Informações de Hardware em JSON:")
 	fmt.Println(string(hardwareInfoJSON))
+
+	// Inicializa o builder de CoreInfoResult do pacote system
+	builder := system.CoreInfoResultBuilder{}
+
+	// Preenche automaticamente os dados de hostname e usuário
+	_, err = builder.AutomaticPopulate() // Corrigido para não criar uma nova variável err
+	if err != nil {
+		log.Fatal("Erro ao preencher automaticamente CoreInfoResult:", err)
+	}
+
+	// Define o patrimônio manualmente
+	builder.SetPatrimonio("12345")
+
+	// Constrói o objeto CoreInfoResult
+	coreInfo := builder.Build()
+
+	// Converte o objeto CoreInfoResult para JSON
+	coreInfoJSON, err := json.MarshalIndent(coreInfo, "", "    ")
+	if err != nil {
+		log.Fatal("Erro ao converter CoreInfoResult para JSON:", err)
+	}
+
+	// Exibe o JSON resultante
+	fmt.Println("Informações de Core em JSON:")
+	fmt.Println(string(coreInfoJSON))
 }
