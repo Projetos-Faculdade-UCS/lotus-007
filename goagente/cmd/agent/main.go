@@ -2,34 +2,23 @@ package main
 
 import (
 	"fmt"
-	"goagente/internal/communication"
-	"goagente/internal/config"
-	logs "goagente/internal/logging"
-	"goagente/internal/monitoring"
-	"goagente/internal/orchestration"
-	"goagente/internal/processing"
+	"goagente/internal/logging"
+	"log"
 )
 
 func main() {
 
-	logs.Init()        // Inicializa os loggers
-	defer logs.Close() // Garante que os arquivos de log serão fechados ao final da execução
-	logs.Info("Aplicação iniciada com sucesso.")
-
-	err := processing.CheckAndCreateFile()
+	loggerFactory, err := logging.NewLoggerFactory()
 	if err != nil {
-		fmt.Println("Erro:", err)
+		log.Fatal(err)
 	}
-	monitoring.CreateHashFiles()
 
-	apiUrl := "https://run.mocky.io"
-	client := communication.NewAPIClient(apiUrl)
+	// Certifique-se de fechar os loggers no final
+	defer loggerFactory.CloseLogger()
 
-	go orchestration.MonitorAndSendCoreInfo(client, config.EnviaCoreInfos, config.TimeInSecondsForCoreInfoLoop)
-
-	orchestration.SendHardwareInfo(client, config.EnviaHardwareInfos)
-
-	go orchestration.SendProgramInfo(client, config.EnviaProgramInfos, config.TimeInSecondsForProgramInfoLoop)
+	logging.Info("Executando DoWork em mypackage")
+	logging.Debug("Informações detalhadas sobre DoWork")
+	logging.Error(fmt.Errorf("erro durante a execução de DoWork"))
 
 	select {}
 }
