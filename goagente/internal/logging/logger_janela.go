@@ -1,6 +1,5 @@
 package logging
 
-
 import (
 	"log"
 	"os"
