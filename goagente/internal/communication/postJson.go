@@ -6,68 +6,50 @@ import (
 	"net/http"
 )
 
-func PostHardwareInfo(client *APIClient, route string, jsonData string) {
-	resp, err := client.GenericPost(route, jsonData)
-	if err != nil {
-		newErr := fmt.Errorf("erro ao enviar as informações de hardware para o servidor: %s", err)
-		logging.Error(newErr)
-		fmt.Println("Erro ao enviar as informações de hardware para o servidor:", err)
-		return
-	}
-	if resp.StatusCode != 200 {
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Erro ao enviar as informações de hardware para o servidor.")
-		newErr := fmt.Errorf("erro ao enviar as informações de hardware para o servidor, status: %s", resp.Status)
-		logging.Error(newErr)
-	} else {
-		fmt.Println("Resposta do servidor:", resp.Status)
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Informações de hardware enviadas com sucesso.")
-		fmt.Println("")
-		logging.Info("Informações de hardware enviadas com sucesso.")
+type InfoPoster struct {
+	client *APIClient
+}
+
+func NewInfoPoster(client *APIClient) *InfoPoster {
+	return &InfoPoster{
+		client: client,
 	}
 }
 
-func PostCoreInfo(client *APIClient, route string, jsonData string) {
-	resp, err := client.GenericPost(route, jsonData)
+// Método genérico para enviar informações
+func (p *InfoPoster) PostInfo(route string, jsonData string, infoType string) error {
+	resp, err := p.client.GenericPost(route, jsonData)
 	if err != nil {
-		newErr := fmt.Errorf("erro ao enviar as informações de core para o servidor: %s", err)
+		newErr := fmt.Errorf("erro ao enviar as informações de %s para o servidor: %s", infoType, err)
 		logging.Error(newErr)
-		fmt.Println("Erro ao enviar as informações de core para o servidor:", err)
-		return
+		fmt.Printf("Erro ao enviar as informações de %s para o servidor: %s\n", infoType, err)
+		return err
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Erro ao enviar as informações de core para o servidor.")
-		newErr := fmt.Errorf("erro ao enviar as informações de core para o servidor, rota: %s, status: %s", route, resp.Status)
+		fmt.Printf("Erro ao enviar as informações de %s para o servidor.\n", infoType)
+		newErr := fmt.Errorf("erro ao enviar as informações de %s para o servidor, rota: %s, status: %s", infoType, route, resp.Status)
 		logging.Error(newErr)
-	} else {
-		fmt.Println("Resposta do servidor:", resp.Status)
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Informações de core enviadas com sucesso.")
-		fmt.Println("")
-		logging.Info("Informações de core enviadas com sucesso.")
+		return newErr
 	}
+
+	fmt.Println("Resposta do servidor:", resp.Status)
+	fmt.Println("Resultado JSON:", jsonData)
+	fmt.Printf("Informações de %s enviadas com sucesso.\n\n", infoType)
+	logging.Info(fmt.Sprintf("Informações de %s enviadas com sucesso.", infoType))
+	return nil
 }
 
-func PostProgramInfo(client *APIClient, route string, jsonData string) {
-	resp, err := client.GenericPost(route, jsonData)
-	if err != nil {
-		newErr := fmt.Errorf("erro ao enviar as informações de programa para o servidor: %s", err)
-		logging.Error(newErr)
-		fmt.Println("Erro ao enviar as informações de programa para o servidor:", err)
-		return
-	}
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Erro ao enviar as informações de programa para o servidor.")
-		newErr := fmt.Errorf("erro ao enviar as informações de programa para o servidor, rota: %s, status: %s", route, resp.Status)
-		logging.Error(newErr)
-	} else {
-		fmt.Println("Resposta do servidor:", resp.Status)
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Println("Informações de programa enviadas com sucesso.")
-		fmt.Println("")
-		logging.Info("Informações de programa enviadas com sucesso.")
-	}
+// Métodos específicos que chamam PostInfo
+func (p *InfoPoster) PostHardwareInfo(route string, jsonData string) error {
+	return p.PostInfo(route, jsonData, "hardware")
+}
+
+func (p *InfoPoster) PostCoreInfo(route string, jsonData string) error {
+	return p.PostInfo(route, jsonData, "core")
+}
+
+func (p *InfoPoster) PostProgramInfo(route string, jsonData string) error {
+	return p.PostInfo(route, jsonData, "programa")
 }

@@ -49,4 +49,20 @@ func main() {
 	// Exibe o JSON resultante
 	fmt.Println("Informações de Core em JSON:")
 	fmt.Println(string(coreInfoJSON))
+
+	orchestratorp := orchestration.NewProgramOrchestrator()
+
+	// Executa o método Orchestrate para montar o ProgramInfo
+	programInfo, err := orchestratorp.Orchestrate(patrimonio)
+	if err != nil {
+		log.Fatal("Erro ao orquestrar informações de programas instalados:", err)
+	}
+
+	// Converte o objeto ProgramInfo para JSON e exibe
+	programInfoJSON, err := json.MarshalIndent(programInfo, "", "    ")
+	if err != nil {
+		log.Fatal("Erro ao converter ProgramInfo para JSON:", err)
+	}
+	fmt.Println("Informações de Programas em JSON:")
+	fmt.Println(string(programInfoJSON))
 }
