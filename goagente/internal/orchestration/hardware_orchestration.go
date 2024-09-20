@@ -6,26 +6,11 @@ import (
 )
 
 // HardwareOrchestrator é responsável por orquestrar a criação do objeto HardwareInfo
-type HardwareOrchestrator struct {
-	ramRetriever         hardware.RAMRetriever
-	diskRetriever        hardware.DiskInfoRetriever
-	processorRetriever   hardware.ProcessorInfoRetriever
-	motherboardRetriever hardware.MotherboardInfoRetriever
-}
+type HardwareOrchestrator struct{}
 
 // NewHardwareOrchestrator cria uma nova instância do orquestrador de hardware
-func NewHardwareOrchestrator(
-	ramRetriever hardware.RAMRetriever,
-	diskRetriever hardware.DiskInfoRetriever,
-	processorRetriever hardware.ProcessorInfoRetriever,
-	motherboardRetriever hardware.MotherboardInfoRetriever,
-) *HardwareOrchestrator {
-	return &HardwareOrchestrator{
-		ramRetriever:         ramRetriever,
-		diskRetriever:        diskRetriever,
-		processorRetriever:   processorRetriever,
-		motherboardRetriever: motherboardRetriever,
-	}
+func NewHardwareOrchestrator() *HardwareOrchestrator {
+	return &HardwareOrchestrator{}
 }
 
 // Orchestrate cria o objeto HardwareInfo agregando os dados de RAM, Disks, Processors e Motherboard
@@ -33,41 +18,74 @@ func (h *HardwareOrchestrator) Orchestrate(patrimonio string) (hardware.Hardware
 	// Inicializa o builder para montar o objeto HardwareInfo
 	builder := hardware.HardwareInfoBuilder{}
 
-	// Recupera as informações de RAM
-	ramInfo, err := h.ramRetriever.GetRAMInfo()
-	if err != nil {
-		logging.Error(err)
+	// Chama os métodos automaticamente para preencher o hardware
+	if err := h.autoPopulate(&builder); err != nil {
 		return hardware.HardwareInfo{}, err
 	}
+
+	// Define o patrimônio e constrói o objeto final
+	builder.SetPatrimonio(patrimonio)
+	return builder.Build(), nil
+}
+
+// autoPopulate preenche automaticamente os dados de hardware no builder
+func (h *HardwareOrchestrator) autoPopulate(builder *hardware.HardwareInfoBuilder) error {
+	// Cria os retrievers automaticamente usando as fábricas
+	ramRetriever, err := hardware.NewRAMRetriever()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+
+	diskRetriever, err := hardware.NewDiskRetriever()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+
+	processorRetriever, err := hardware.NewProcessorRetriever()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+
+	motherboardRetriever, err := hardware.NewMotherboardRetriever()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+
+	// Recupera as informações de RAM
+	ramInfo, err := ramRetriever.GetRAMInfo()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+	builder.SetRAMModules(ramInfo)
 
 	// Recupera as informações de discos
-	diskInfo, err := h.diskRetriever.GetDiskInfo()
+	diskInfo, err := diskRetriever.GetDiskInfo()
 	if err != nil {
 		logging.Error(err)
-		return hardware.HardwareInfo{}, err
+		return err
 	}
+	builder.SetDisks(diskInfo)
 
 	// Recupera as informações de processadores
-	processorInfo, err := h.processorRetriever.GetProcessorInfo()
+	processorInfo, err := processorRetriever.GetProcessorInfo()
 	if err != nil {
 		logging.Error(err)
-		return hardware.HardwareInfo{}, err
+		return err
 	}
+	builder.SetProcessors(processorInfo)
 
 	// Recupera as informações da placa-mãe
-	motherboardInfo, err := h.motherboardRetriever.GetMotherboardInfo()
+	motherboardInfo, err := motherboardRetriever.GetMotherboardInfo()
 	if err != nil {
 		logging.Error(err)
-		return hardware.HardwareInfo{}, err
+		return err
 	}
+	builder.SetMotherboard(motherboardInfo)
 
-	// Constrói o objeto HardwareInfo agregando todas as informações coletadas
-	hardwareInfo := builder.SetPatrimonio(patrimonio).
-		SetRAMModules(ramInfo).
-		SetDisks(diskInfo).
-		SetProcessors(processorInfo).
-		SetMotherboard(motherboardInfo).
-		Build()
-
-	return hardwareInfo, nil
+	return nil
 }
