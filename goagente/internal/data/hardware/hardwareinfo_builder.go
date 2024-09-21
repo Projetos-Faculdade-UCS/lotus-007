@@ -6,6 +6,7 @@ type HardwareInfo struct {
 	Processors  []ProcessorInfo `json:"processors"`
 	RAMModules  []RAM           `json:"ram"`
 	Motherboard MotherboardInfo `json:"motherboard"`
+	HMAC        string          `json:"hmac"` // Sempre no final
 }
 
 type HardwareInfoBuilder struct {

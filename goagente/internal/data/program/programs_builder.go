@@ -9,6 +9,7 @@ type ProgramBuilder struct {
 type ProgramInfo struct {
 	Patrimonio string    `json:"patrimonio"`
 	Programs   []Program `json:"programs"`
+	HMAC       string    `json:"hmac"` // Sempre no final
 }
 
 // SetPatrimonio define o patrimônio no ProgramInfo

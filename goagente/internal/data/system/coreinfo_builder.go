@@ -2,9 +2,10 @@ package system
 
 // CoreInfoResult é a estrutura que queremos construir
 type CoreInfoResult struct {
-	Patrimonio string `json:"patrimonio"`
 	Hostname   string `json:"hostname"`
 	Username   string `json:"username"`
+	Patrimonio string `json:"patrimonio"`
+	HMAC       string `json:"hmac"` // Sempre no final
 }
 
 // CoreInfoResultBuilder é o Builder para construir CoreInfoResult
