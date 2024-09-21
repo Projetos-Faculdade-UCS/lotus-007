@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	communication "goagente/internal/communication"
 	"goagente/internal/logging"
 	"goagente/internal/orchestration"
 	"log"
@@ -15,6 +16,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer loggerFactory.CloseLogger()
+
+	client := communication.NewAPIClient("https://api.meuservidor.com")
+	poster := communication.NewInfoPoster(client)
 
 	logging.Info("Iniciando a execução do HardwareInfoBuilder")
 
@@ -32,8 +36,12 @@ func main() {
 	if err != nil {
 		log.Fatal("Erro ao converter HardwareInfo para JSON:", err)
 	}
-	fmt.Println("Informações de Hardware em JSON:")
-	fmt.Println(string(hardwareInfoJSON))
+
+	err = poster.PostHardwareInfo("hardware", string(hardwareInfoJSON))
+	if err != nil {
+		fmt.Println("Erro ao enviar informações de core:", err)
+	}
+
 	// Orquestra as informações de CoreInfoResult
 	coreInfo, err := orchestration.OrchestrateCoreInfo(patrimonio)
 	if err != nil {
@@ -46,9 +54,10 @@ func main() {
 		log.Fatal("Erro ao converter CoreInfoResult para JSON:", err)
 	}
 
-	// Exibe o JSON resultante
-	fmt.Println("Informações de Core em JSON:")
-	fmt.Println(string(coreInfoJSON))
+	err = poster.PostCoreInfo("core", string(coreInfoJSON))
+	if err != nil {
+		fmt.Println("Erro ao enviar informações de core:", err)
+	}
 
 	orchestratorp := orchestration.NewProgramOrchestrator()
 
@@ -63,6 +72,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Erro ao converter ProgramInfo para JSON:", err)
 	}
-	fmt.Println("Informações de Programas em JSON:")
-	fmt.Println(string(programInfoJSON))
+
+	err = poster.PostProgramInfo("program", string(programInfoJSON))
+	if err != nil {
+		fmt.Println("Erro ao enviar informações de programas:", err)
+	}
+
 }

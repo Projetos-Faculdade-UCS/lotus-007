@@ -2,7 +2,6 @@ package communication
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"goagente/internal/logging"
 	"net/http"
@@ -26,10 +25,10 @@ func NewAPIClient(baseURL string) *APIClient {
 
 // GenericPost envia uma requisição POST genérica usando HTTPS
 func (c *APIClient) GenericPost(endpoint string, payload interface{}) (*http.Response, error) {
-	// Serializa o payload
-	jsonPayload, err := serializePayload(payload)
+	// Verifica o tipo do payload e converte para []byte, se necessário
+	jsonPayload, err := preparePayload(payload)
 	if err != nil {
-		logging.Error(fmt.Errorf("erro ao serializar o payload: %w", err))
+		logging.Error(fmt.Errorf("erro ao preparar o payload: %w", err))
 		return nil, err
 	}
 
@@ -39,6 +38,7 @@ func (c *APIClient) GenericPost(endpoint string, payload interface{}) (*http.Res
 		logging.Error(fmt.Errorf("erro ao criar a requisição: %w", err))
 		return nil, err
 	}
+	fmt.Println(string(jsonPayload)) // Para verificar o payload no console
 
 	// Envia a requisição
 	resp, err := c.sendRequest(req)
@@ -47,7 +47,6 @@ func (c *APIClient) GenericPost(endpoint string, payload interface{}) (*http.Res
 		return nil, err
 	}
 
-	// Verifica o status da resposta
 	if err := checkResponseStatus(resp); err != nil {
 		logging.Error(err)
 		return resp, err
@@ -56,13 +55,16 @@ func (c *APIClient) GenericPost(endpoint string, payload interface{}) (*http.Res
 	return resp, nil
 }
 
-// serializePayload serializa o payload para JSON
-func serializePayload(payload interface{}) ([]byte, error) {
-	jsonPayload, err := json.Marshal(payload)
-	if err != nil {
-		return nil, fmt.Errorf("erro ao serializar o payload: %s", err)
+// preparePayload converte o payload para []byte, se necessário
+func preparePayload(payload interface{}) ([]byte, error) {
+	switch p := payload.(type) {
+	case []byte:
+		return p, nil // Payload já é []byte
+	case string:
+		return []byte(p), nil // Converte string para []byte
+	default:
+		return nil, fmt.Errorf("tipo de payload não suportado: %T", payload)
 	}
-	return jsonPayload, nil
 }
 
 // createRequest cria a requisição HTTP POST
