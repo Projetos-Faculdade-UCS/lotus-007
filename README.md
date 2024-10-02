@@ -24,7 +24,7 @@ Esta branch está focada em converter o código inicial (Preview) para um design
 Nesta branch, o foco é a refatoração do código para:
 
 - Implementar um design orientado a objetos (OO).
-- Adotar padrões de projeto (Design Patterns) como Factory, Singleton e Strategy para modularizar e organizar melhor o código.
+- Adotar padrões de projeto (Design Patterns) como Factory, Singleton e Builder para modularizar e organizar melhor o código.
 - Melhorar a arquitetura, dividindo o sistema em camadas bem definidas (N-Tier).
 - Garantir que cada camada esteja bem desacoplada e tenha responsabilidades claras.
 
@@ -32,10 +32,10 @@ Nesta branch, o foco é a refatoração do código para:
 
 ## Padrões de Projeto Utilizados
 
-- **Factory**: Para criar diferentes implementações de captura de hardware e software.
+- **Factory**: Para criar diferentes implementações de captura de hardware e software, além de ser utilizado também para o logging.
 - **Singleton**: Para garantir que certas instâncias, como a de Logging e Segurança, existam apenas uma vez durante a execução do programa.
-- **Strategy**: Para alternar diferentes estratégias de processamento de dados capturados sem alterar o código principal.
-
+- **Builder**: Para estruturar a orquestração na formação dos JSONs capturados.
+  
 ---
 
 ## Como Contribuir
