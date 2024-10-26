@@ -23,9 +23,9 @@ func NewHardwareMediator(orchestrator *HardwareOrchestrator, poster *communicati
 }
 
 // OrchestrateAndPost coleta e envia as informações de hardware para o servidor
-func (m *HardwareMediator) OrchestrateAndPost(patrimonio string) error {
+func (m *HardwareMediator) OrchestrateAndPost(param string) error {
 	// Orquestra as informações de hardware
-	hardwareInfo, err := m.orchestrator.Orchestrate(patrimonio)
+	hardwareInfo, err := m.orchestrator.Orchestrate()
 	if err != nil {
 		logging.Error(err)
 		return err

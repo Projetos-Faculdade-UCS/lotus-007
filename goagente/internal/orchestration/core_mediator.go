@@ -22,9 +22,9 @@ func NewCoreMediator(poster *communication.InfoPoster, secretKey string) *CoreMe
 }
 
 // OrchestrateAndPost coleta e envia as informações de Core para o servidor
-func (m *CoreMediator) OrchestrateAndPost(patrimonio string) error {
+func (m *CoreMediator) OrchestrateAndPost(param string) error {
 	// Orquestra as informações de Core
-	coreInfo, err := OrchestrateCoreInfo(patrimonio)
+	coreInfo, err := OrchestrateCoreInfo()
 	if err != nil {
 		logging.Error(err)
 		return err

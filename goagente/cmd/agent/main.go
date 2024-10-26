@@ -22,7 +22,6 @@ func main() {
 	poster := communication.NewInfoPoster(client)
 
 	// Define o patrimônio e a chave secreta para HMAC
-	patrimonio := "12345"
 	secretKey := "minhaChaveSecreta"
 
 	// Inicializa o orquestrador de hardware e programas
@@ -37,25 +36,22 @@ func main() {
 	// Cria os loops de orquestração com seus respectivos mediadores e intervalos
 	hardwareLoop := &orchestration.HardwareOrchestrationLoop{
 		OrchestrationLoop: orchestration.OrchestrationLoop{
-			Mediator:   hardwareMediator,
-			Patrimonio: patrimonio,
-			Interval:   60 * time.Second, // Define o intervalo de 5 segundos
+			Mediator: hardwareMediator,
+			Interval: 60 * time.Second, // Define o intervalo de 5 segundos
 		},
 	}
 
 	coreLoop := &orchestration.CoreOrchestrationLoop{
 		OrchestrationLoop: orchestration.OrchestrationLoop{
-			Mediator:   coreMediator,
-			Patrimonio: patrimonio,
-			Interval:   60 * time.Second, // Define o intervalo de 5 segundos
+			Mediator: coreMediator,
+			Interval: 60 * time.Second, // Define o intervalo de 5 segundos
 		},
 	}
 
 	programLoop := &orchestration.ProgramOrchestrationLoop{
 		OrchestrationLoop: orchestration.OrchestrationLoop{
-			Mediator:   programMediator,
-			Patrimonio: patrimonio,
-			Interval:   60 * time.Second, // Define o intervalo de 5 segundos
+			Mediator: programMediator,
+			Interval: 60 * time.Second, // Define o intervalo de 5 segundos
 		},
 	}
 

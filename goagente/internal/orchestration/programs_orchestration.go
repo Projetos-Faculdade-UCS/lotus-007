@@ -1,7 +1,9 @@
 package orchestration
 
 import (
+	"goagente/internal/data/patrimonio"
 	programs "goagente/internal/data/program"
+	"goagente/internal/logging"
 	"log"
 )
 
@@ -14,7 +16,7 @@ func NewProgramOrchestrator() *ProgramOrchestrator {
 }
 
 // Orchestrate cria o objeto ProgramInfo agregando os dados de programas instalados e patrimônio
-func (h *ProgramOrchestrator) Orchestrate(patrimonio string) (programs.ProgramInfo, error) {
+func (h *ProgramOrchestrator) Orchestrate() (programs.ProgramInfo, error) {
 	// Inicializa o builder para montar o objeto ProgramInfo
 	builder := programs.ProgramBuilder{}
 
@@ -24,13 +26,20 @@ func (h *ProgramOrchestrator) Orchestrate(patrimonio string) (programs.ProgramIn
 	}
 
 	// Define o patrimônio e constrói o objeto final
-	builder.SetPatrimonio(patrimonio)
 	return builder.Build(), nil
 }
 
 // autoPopulate preenche automaticamente os dados de programas instalados no builder
 func (h *ProgramOrchestrator) autoPopulate(builder *programs.ProgramBuilder) error {
-	// Usa a fábrica para obter o retriever correto
+
+	patRetriever, _ := patrimonio.NewPatRetriever()
+	pat, err := patRetriever.GetCurrentPat()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+	builder.SetPatrimonio(pat)
+
 	programRetriever, err := programs.NewProgramRetriever()
 	if err != nil {
 		log.Println("Erro ao inicializar o ProgramRetriever:", err)
