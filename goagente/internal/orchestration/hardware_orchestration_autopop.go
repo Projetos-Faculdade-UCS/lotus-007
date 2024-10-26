@@ -1,8 +1,9 @@
 package orchestration
 
 import (
-	"goagente/internal/data/hardware" // Importa as estruturas de dados como HardwareInfo
-	"goagente/internal/logging"       // Para logar possíveis erros
+	"goagente/internal/data/hardware"   // Importa as estruturas de dados como HardwareInfo
+	"goagente/internal/data/patrimonio" // Para logar possíveis erros
+	"goagente/internal/logging"
 )
 
 // HardwareOrchestrator é responsável por orquestrar a criação do objeto HardwareInfo
@@ -14,7 +15,7 @@ func NewHardwareOrchestrator() *HardwareOrchestrator {
 }
 
 // Orchestrate cria o objeto HardwareInfo agregando os dados de RAM, Disks, Processors e Motherboard
-func (h *HardwareOrchestrator) Orchestrate(patrimonio string) (hardware.HardwareInfo, error) {
+func (h *HardwareOrchestrator) Orchestrate() (hardware.HardwareInfo, error) {
 	// Inicializa o builder para montar o objeto HardwareInfo
 	builder := hardware.HardwareInfoBuilder{}
 
@@ -23,14 +24,20 @@ func (h *HardwareOrchestrator) Orchestrate(patrimonio string) (hardware.Hardware
 		return hardware.HardwareInfo{}, err
 	}
 
-	// Define o patrimônio e constrói o objeto final
-	builder.SetPatrimonio(patrimonio)
 	return builder.Build(), nil
 }
 
 // autoPopulate preenche automaticamente os dados de hardware no builder
 func (h *HardwareOrchestrator) autoPopulate(builder *hardware.HardwareInfoBuilder) error {
 	// Cria os retrievers automaticamente usando as fábricas
+	patRetriever, _ := patrimonio.NewPatRetriever()
+	pat, err := patRetriever.GetCurrentPat()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+	builder.SetPatrimonio(pat)
+
 	ramRetriever, err := hardware.NewRAMRetriever()
 	if err != nil {
 		logging.Error(err)

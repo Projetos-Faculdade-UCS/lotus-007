@@ -23,8 +23,8 @@ func NewProgramMediator(orchestrator *ProgramOrchestrator, poster *communication
 }
 
 // OrchestrateAndPost coleta e envia as informações de programas instalados para o servidor
-func (m *ProgramMediator) OrchestrateAndPost(patrimonio string) error {
-	programInfo, err := m.orchestrator.Orchestrate(patrimonio)
+func (m *ProgramMediator) OrchestrateAndPost(param string) error {
+	programInfo, err := m.orchestrator.Orchestrate()
 	if err != nil {
 		logging.Error(err)
 		return err

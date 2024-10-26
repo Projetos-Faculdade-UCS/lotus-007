@@ -6,6 +6,7 @@ type CoreInfoResult struct {
 	Username   string `json:"username"`
 	Patrimonio string `json:"patrimonio"`
 	HMAC       string `json:"hmac"` // Sempre no final
+	Os         string `json:"os"`
 }
 
 // CoreInfoResultBuilder é o Builder para construir CoreInfoResult
@@ -28,6 +29,10 @@ func (b *CoreInfoResultBuilder) SetUsername(username string) *CoreInfoResultBuil
 // SetPatrimonio define o Patrimonio no CoreInfoResult
 func (b *CoreInfoResultBuilder) SetPatrimonio(patrimonio string) *CoreInfoResultBuilder {
 	b.coreInfo.Patrimonio = patrimonio
+	return b
+}
+func (b *CoreInfoResultBuilder) SetOs(os string) *CoreInfoResultBuilder {
+	b.coreInfo.Os = os
 	return b
 }
 

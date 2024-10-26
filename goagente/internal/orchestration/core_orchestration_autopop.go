@@ -1,12 +1,14 @@
 package orchestration
 
 import (
+	"goagente/internal/data/patrimonio"
 	"goagente/internal/data/system"
+	"goagente/internal/logging"
 	"log"
 )
 
 // OrchestrateCoreInfo preenche automaticamente o CoreInfoResult com hostname e usuário
-func OrchestrateCoreInfo(patrimonio string) (system.CoreInfoResult, error) {
+func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
 	// Inicializa o builder
 	builder := system.CoreInfoResultBuilder{}
 
@@ -33,6 +35,26 @@ func OrchestrateCoreInfo(patrimonio string) (system.CoreInfoResult, error) {
 	builder.SetUsername(username)
 
 	// Define o patrimônio e constrói o objeto CoreInfoResult
-	builder.SetPatrimonio(patrimonio)
+	patRetriever, _ := patrimonio.NewPatRetriever()
+	pat, err := patRetriever.GetCurrentPat()
+	if err != nil {
+		logging.Error(err)
+		return system.CoreInfoResult{}, err
+	}
+	builder.SetPatrimonio(pat)
+
+	//Coleta o sistema operacional
+	osRetriever, err := system.NewOSRetriever()
+	if err != nil {
+		log.Println("Erro ao inicializar o OSRetriever:", err)
+		return system.CoreInfoResult{}, err
+	}
+	os, err := osRetriever.GetCurrentOS()
+	if err != nil {
+		log.Println("Erro ao obter o sistema operacional:", err)
+		return system.CoreInfoResult{}, err
+	}
+	builder.SetOs(os)
+
 	return builder.Build(), nil
 }
