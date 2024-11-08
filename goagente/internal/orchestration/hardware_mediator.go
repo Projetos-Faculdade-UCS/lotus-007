@@ -39,5 +39,5 @@ func (m *HardwareMediator) OrchestrateAndPost(param string) error {
 	}
 
 	// Envia o JSON com HMAC
-	return m.poster.PostHardwareInfo("hardware", hardwareInfoWithHMAC)
+	return m.poster.PostHardwareInfo("v3/f7152de8-232a-440f-8a51-8c453c9356ac", hardwareInfoWithHMAC)
 }

@@ -2,9 +2,9 @@ package main
 
 import (
 	"goagente/internal/communication" // Importa o pacote do orquestrador de hardware
-	// Importa o pacote do orquestrador de programas
 	"goagente/internal/logging"
 	"goagente/internal/orchestration"
+	"goagente/internal/service"
 	"log"
 	"time"
 )
@@ -17,8 +17,14 @@ func main() {
 	}
 	defer loggerFactory.CloseLogger()
 
+	// Inicia o serviço e gerencia o ciclo de vida
+	go func() {
+		if err := service.RunService(); err != nil {
+			log.Fatalf("Erro ao executar o serviço: %v", err)
+		}
+	}()
 	// Inicializa a camada de comunicação
-	client := communication.NewAPIClient("https://api.meuservidor.com")
+	client := communication.NewAPIClient("http://run.mocky.io")
 	poster := communication.NewInfoPoster(client)
 
 	// Define o patrimônio e a chave secreta para HMAC

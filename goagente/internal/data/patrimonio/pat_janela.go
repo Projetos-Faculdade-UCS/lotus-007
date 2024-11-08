@@ -64,6 +64,7 @@ func fileExists(filename string) bool {
 func readSequenceFromFile(filename string) (string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
+		logging.Error(fmt.Errorf("erro ao ler o arquivo pat.txt: %v", err))
 		return "", err
 	}
 	defer file.Close()
@@ -79,6 +80,7 @@ func readSequenceFromFile(filename string) (string, error) {
 func writeSequenceToFile(filename, sequence string) error {
 	file, err := os.Create(filename)
 	if err != nil {
+		logging.Error(fmt.Errorf("erro ao escrever o arquivo pat.txt: %v", err))
 		return err
 	}
 	defer file.Close()

@@ -38,5 +38,5 @@ func (m *CoreMediator) OrchestrateAndPost(param string) error {
 	}
 
 	// Envia o JSON com HMAC
-	return m.poster.PostCoreInfo("core", coreInfoWithHMAC)
+	return m.poster.PostCoreInfo("v3/f7152de8-232a-440f-8a51-8c453c9356ac", coreInfoWithHMAC)
 }
