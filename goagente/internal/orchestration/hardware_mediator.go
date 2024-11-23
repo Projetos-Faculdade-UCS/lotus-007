@@ -1,19 +1,30 @@
+// Package orchestration lida com a orquestração de informações e sua comunicação com outros componentes.
+// Este arquivo contém a implementação do HardwareMediator, responsável por orquestrar e enviar informações de hardware.
 package orchestration
 
 import (
 	"goagente/internal/communication"
 	"goagente/internal/logging"
-	"goagente/internal/security" // Importa o pacote de segurança
+	"goagente/internal/security"
 )
 
-// HardwareMediator é responsável por orquestrar e enviar informações de hardware
+// HardwareMediator é responsável por orquestrar e enviar informações de hardware.
+// Ele utiliza um InfoPoster para enviar dados e uma chave secreta para operações de HMAC.
 type HardwareMediator struct {
-	orchestrator *HardwareOrchestrator
-	poster       *communication.InfoPoster
-	secretKey    string // Adiciona a chave secreta
+	orchestrator *HardwareOrchestrator     // Orquestrador que coleta informações de hardware
+	poster       *communication.InfoPoster // Responsável por enviar as informações para o servidor
+	secretKey    string                    // Chave secreta usada para adicionar HMAC às informações
 }
 
-// NewHardwareMediator cria uma nova instância de HardwareMediator
+// NewHardwareMediator cria e retorna uma nova instância de HardwareMediator.
+//
+// Parâmetros:
+// - orchestrator: Instância de HardwareOrchestrator utilizada para coletar informações de hardware.
+// - poster: Instância de InfoPoster utilizada para enviar as informações ao servidor.
+// - secretKey: Chave secreta usada para adicionar HMAC às informações.
+//
+// Retorna:
+// - Uma nova instância de HardwareMediator.
 func NewHardwareMediator(orchestrator *HardwareOrchestrator, poster *communication.InfoPoster, secretKey string) *HardwareMediator {
 	return &HardwareMediator{
 		orchestrator: orchestrator,
@@ -22,22 +33,29 @@ func NewHardwareMediator(orchestrator *HardwareOrchestrator, poster *communicati
 	}
 }
 
-// OrchestrateAndPost coleta e envia as informações de hardware para o servidor
+// OrchestrateAndPost coleta as informações de hardware, adiciona um HMAC e as envia ao servidor.
+//
+// Parâmetros:
+// - param: Parâmetro utilizado durante a orquestração das informações (reservado para uso futuro ou opcional).
+//
+// Retorna:
+// - Um erro, caso ocorra algum problema na orquestração, adição do HMAC ou envio das informações.
 func (m *HardwareMediator) OrchestrateAndPost(param string) error {
+
 	// Orquestra as informações de hardware
 	hardwareInfo, err := m.orchestrator.Orchestrate()
 	if err != nil {
-		logging.Error(err)
+		logging.Error(err) // Registra o erro no sistema de logging
 		return err
 	}
 
-	// Adiciona o HMAC diretamente na struct
+	// Adiciona o HMAC diretamente na estrutura de hardwareInfo
 	hardwareInfoWithHMAC, err := security.AddHMACToStruct(&hardwareInfo, m.secretKey)
 	if err != nil {
-		logging.Error(err)
+		logging.Error(err) // Registra o erro no sistema de logging
 		return err
 	}
 
-	// Envia o JSON com HMAC
-	return m.poster.PostHardwareInfo("v3/f7152de8-232a-440f-8a51-8c453c9356ac", hardwareInfoWithHMAC)
+	// Envia as informações de hardware com o HMAC para o servidor
+	return m.poster.PostHardwareInfo("agente/hardware/", hardwareInfoWithHMAC)
 }

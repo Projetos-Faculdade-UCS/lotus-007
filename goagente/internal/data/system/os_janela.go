@@ -1,3 +1,5 @@
+// Package system fornece funcionalidades para coletar informações do sistema.
+// Este arquivo contém a implementação de WindowsOSRetriever para coletar informações sobre o sistema operacional Windows.
 package system
 
 import (
@@ -6,9 +8,17 @@ import (
 	"strings"
 )
 
+// WindowsOSRetriever é a implementação de OSRetriever para o sistema operacional Windows.
+// Ele utiliza comandos do sistema para coletar informações sobre a versão do Windows.
 type WindowsOSRetriever struct{}
 
+// GetCurrentOS coleta informações sobre o sistema operacional Windows.
+//
+// Retorna:
+// - Uma string representando o nome e a versão do sistema operacional.
+// - Um erro, caso a coleta falhe.
 func (WindowsOSRetriever) GetCurrentOS() (string, error) {
+	// Comando para obter o nome do sistema operacional
 	cmd := exec.Command("cmd", "/C", "wmic os get Caption")
 	output, err := cmd.CombinedOutput()
 	if err != nil {

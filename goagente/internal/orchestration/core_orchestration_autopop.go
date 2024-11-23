@@ -1,3 +1,5 @@
+// Package orchestration lida com a orquestração de informações e sua coleta de diversas fontes.
+// Este arquivo contém a função OrchestrateCoreInfo, responsável por preencher o CoreInfoResult com dados do sistema.
 package orchestration
 
 import (
@@ -7,12 +9,17 @@ import (
 	"log"
 )
 
-// OrchestrateCoreInfo preenche automaticamente o CoreInfoResult com hostname e usuário
+// OrchestrateCoreInfo coleta informações do sistema, como hostname, usuário atual, patrimônio e sistema operacional.
+// Esses dados são utilizados para preencher e retornar um objeto do tipo CoreInfoResult.
+//
+// Retorna:
+// - Um objeto CoreInfoResult contendo os dados coletados.
+// - Um erro, caso ocorra algum problema durante a coleta de informações.
 func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
-	// Inicializa o builder
+	// Inicializa o builder para construir o CoreInfoResult
 	builder := system.CoreInfoResultBuilder{}
 
-	// Coleta o hostname
+	// Coleta o hostname do sistema
 	hostnameRetriever, err := system.NewHostnameRetriever()
 	if err != nil {
 		log.Println("Erro ao inicializar o HostnameRetriever:", err)
@@ -25,7 +32,7 @@ func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
 	}
 	builder.SetHostname(hostname)
 
-	// Coleta o usuário atual
+	// Coleta o usuário atual do sistema
 	userRetriever := system.WindowsUserRetriever{}
 	username, err := userRetriever.GetCurrentUser()
 	if err != nil {
@@ -34,7 +41,7 @@ func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
 	}
 	builder.SetUsername(username)
 
-	// Define o patrimônio e constrói o objeto CoreInfoResult
+	// Coleta o patrimônio atual do sistema
 	patRetriever, _ := patrimonio.NewPatRetriever()
 	pat, err := patRetriever.GetCurrentPat()
 	if err != nil {
@@ -43,7 +50,7 @@ func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
 	}
 	builder.SetPatrimonio(pat)
 
-	//Coleta o sistema operacional
+	// Coleta o sistema operacional do dispositivo
 	osRetriever, err := system.NewOSRetriever()
 	if err != nil {
 		log.Println("Erro ao inicializar o OSRetriever:", err)
@@ -56,5 +63,6 @@ func OrchestrateCoreInfo() (system.CoreInfoResult, error) {
 	}
 	builder.SetOs(os)
 
+	// Constrói e retorna o CoreInfoResult
 	return builder.Build(), nil
 }

@@ -1,3 +1,4 @@
+// Package communication lida com a comunicação externa via API.
 package communication
 
 import (
@@ -6,17 +7,27 @@ import (
 	"net/http"
 )
 
+// InfoPoster é responsável por enviar informações usando um APIClient.
 type InfoPoster struct {
 	client *APIClient
 }
 
+// NewInfoPoster cria uma nova instância de InfoPoster com o cliente fornecido.
 func NewInfoPoster(client *APIClient) *InfoPoster {
 	return &InfoPoster{
 		client: client,
 	}
 }
 
-// Método genérico para enviar informações
+// PostInfo envia informações genéricas para o servidor.
+//
+// Parâmetros:
+// - route: rota para onde enviar as informações.
+// - jsonData: dados em formato JSON a serem enviados.
+// - infoType: tipo de informação sendo enviada (ex: "hardware", "core", "programa").
+//
+// Retorna:
+// - erro: se ocorrer um erro durante o envio das informações.
 func (p *InfoPoster) PostInfo(route string, jsonData string, infoType string) error {
 	resp, err := p.client.GenericPost(route, jsonData)
 	if err != nil {
@@ -41,15 +52,38 @@ func (p *InfoPoster) PostInfo(route string, jsonData string, infoType string) er
 	return nil
 }
 
-// Métodos específicos que chamam PostInfo
+// PostHardwareInfo envia informações de hardware para o servidor.
+//
+// Parâmetros:
+// - route: rota para onde enviar as informações.
+// - jsonData: dados em formato JSON a serem enviados.
+//
+// Retorna:
+// - erro: se ocorrer um erro durante o envio das informações.
 func (p *InfoPoster) PostHardwareInfo(route string, jsonData string) error {
 	return p.PostInfo(route, jsonData, "hardware")
 }
 
+// PostCoreInfo envia informações do core para o servidor.
+//
+// Parâmetros:
+// - route: rota para onde enviar as informações.
+// - jsonData: dados em formato JSON a serem enviados.
+//
+// Retorna:
+// - erro: se ocorrer um erro durante o envio das informações.
 func (p *InfoPoster) PostCoreInfo(route string, jsonData string) error {
 	return p.PostInfo(route, jsonData, "core")
 }
 
+// PostProgramInfo envia informações de programas para o servidor.
+//
+// Parâmetros:
+// - route: rota para onde enviar as informações.
+// - jsonData: dados em formato JSON a serem enviados.
+//
+// Retorna:
+// - erro: se ocorrer um erro durante o envio das informações.
 func (p *InfoPoster) PostProgramInfo(route string, jsonData string) error {
 	return p.PostInfo(route, jsonData, "programa")
 }
