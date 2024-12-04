@@ -1,3 +1,5 @@
+// Package hardware fornece funcionalidades para coletar informações de hardware do sistema.
+// Este arquivo contém a implementação de WindowsRAMRetriever para coletar informações da memória RAM no sistema operacional Windows.
 package hardware
 
 import (
@@ -9,14 +11,21 @@ import (
 	"os/exec"
 )
 
-// WindowsRAMRetriever implementa o método GetRAMInfo para Windows
+// WindowsRAMRetriever é a implementação de RAMRetriever para o sistema operacional Windows.
+// Ele utiliza comandos PowerShell para coletar informações sobre a memória RAM.
 type WindowsRAMRetriever struct{}
 
-// GetRAMInfo retorna as informações da memória RAM no Windows
+// GetRAMInfo coleta informações sobre a memória RAM no Windows.
+// Ele utiliza o PowerShell para obter os dados e os desserializa em uma estrutura RAM.
+// As capacidades das memórias são convertidas de bytes para gigabytes.
+//
+// Retorna:
+// - Um slice de RAM contendo as informações das memórias instaladas.
+// - Um erro, caso ocorra algum problema durante a execução do comando ou a desserialização dos dados.
 func (r WindowsRAMRetriever) GetRAMInfo() ([]RAM, error) {
 	cmd := r.powerShellGetRamInfo()
 
-	// Executa o comando PowerShell
+	// Executa o comando PowerShell para obter informações da memória RAM
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -26,14 +35,14 @@ func (r WindowsRAMRetriever) GetRAMInfo() ([]RAM, error) {
 		return nil, newErr
 	}
 
-	// Usa o novo método para desserializar o JSON
+	// Desserializa a saída JSON em objetos RAM
 	ramList, err := r.deserializeRAMInfo(out.Bytes())
 	if err != nil {
 		logging.Error(err)
 		return nil, err
 	}
 
-	// Converte a capacidade de cada RAM para gigabytes
+	// Converte a capacidade de cada RAM de bytes para gigabytes
 	for i := range ramList {
 		ramList[i].Capacity = utils.BytesToGigabytes(uint64(ramList[i].Capacity))
 	}
@@ -41,14 +50,29 @@ func (r WindowsRAMRetriever) GetRAMInfo() ([]RAM, error) {
 	return ramList, nil
 }
 
-// powerShellGetRamInfo executa o comando PowerShell para obter informações da RAM
+// powerShellGetRamInfo cria um comando PowerShell para coletar informações sobre a memória RAM.
+// O comando retorna os dados em formato JSON, incluindo Manufacturer, Capacity e FormFactor.
+//
+// Retorna:
+// - Um comando configurado para execução.
 func (WindowsRAMRetriever) powerShellGetRamInfo() *exec.Cmd {
 	return exec.Command("powershell", "-Command", "Get-WmiObject -Class Win32_PhysicalMemory | Select-Object -Property Manufacturer, Capacity, FormFactor | ConvertTo-Json")
 }
 
-// deserializeRAMInfo desserializa o JSON para informações da RAM
+// deserializeRAMInfo desserializa os dados JSON em informações da memória RAM.
+//
+// Funcionalidade:
+// - Primeiro, tenta desserializar como um único objeto RAM.
+// - Se falhar, tenta desserializar como um array de objetos RAM.
+//
+// Parâmetros:
+// - data: Dados JSON a serem desserializados.
+//
+// Retorna:
+// - Um slice de RAM contendo as informações das memórias.
+// - Um erro, caso a desserialização falhe.
 func (WindowsRAMRetriever) deserializeRAMInfo(data []byte) ([]RAM, error) {
-	// Tenta deserializar o JSON como um único objeto
+	// Tenta desserializar o JSON como um único objeto
 	var singleRAM RAM
 	err := json.Unmarshal(data, &singleRAM)
 	if err == nil {

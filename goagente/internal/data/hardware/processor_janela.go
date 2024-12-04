@@ -1,3 +1,5 @@
+// Package hardware fornece funcionalidades para coletar informações de hardware do sistema.
+// Este arquivo contém a implementação do WindowsProcessorRetriever para coletar dados do processador no sistema operacional Windows.
 package hardware
 
 import (
@@ -8,16 +10,20 @@ import (
 	"os/exec"
 )
 
-// Estrutura para informações do processador
-
-// ProcessorInfoRetrieverWindows define o contrato para obter informações do processador
+// WindowsProcessorRetriever é a implementação de ProcessorInfoRetriever para o sistema operacional Windows.
+// Ele utiliza comandos PowerShell para coletar informações sobre os processadores.
 type WindowsProcessorRetriever struct{}
 
-// GetProcessorInfo retorna as informações do processador
+// GetProcessorInfo coleta informações sobre os processadores no Windows.
+// Ele utiliza o PowerShell para obter os dados e os desserializa em uma estrutura ProcessorInfo.
+//
+// Retorna:
+// - Um slice de ProcessorInfo contendo as informações dos processadores.
+// - Um erro, caso ocorra algum problema durante a execução do comando ou a desserialização dos dados.
 func (p WindowsProcessorRetriever) GetProcessorInfo() ([]ProcessorInfo, error) {
 	cmd := p.powerShellGetProcessorInfo()
 
-	// Executa o comando PowerShell
+	// Executa o comando PowerShell para obter informações dos processadores
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -27,7 +33,7 @@ func (p WindowsProcessorRetriever) GetProcessorInfo() ([]ProcessorInfo, error) {
 		return nil, err
 	}
 
-	// Usa o novo método para desserializar o JSON
+	// Desserializa a saída JSON em objetos ProcessorInfo
 	processors, err := p.deserializeProcessorInfo(out.Bytes())
 	if err != nil {
 		logging.Error(err)
@@ -37,16 +43,31 @@ func (p WindowsProcessorRetriever) GetProcessorInfo() ([]ProcessorInfo, error) {
 	return processors, nil
 }
 
-// PowerShellGetProcessorInfo executa o comando PowerShell para obter informações do processador
+// powerShellGetProcessorInfo cria um comando PowerShell para coletar informações sobre os processadores.
+// O comando retorna os dados em formato JSON, incluindo Name, NumberOfCores e MaxClockSpeed.
+//
+// Retorna:
+// - Um comando configurado para execução.
 func (WindowsProcessorRetriever) powerShellGetProcessorInfo() *exec.Cmd {
 	// Comando PowerShell para obter informações do processador em formato JSON
 	cmd := exec.Command("powershell", "-Command", "Get-WmiObject -Class Win32_Processor | Select-Object -Property Name, NumberOfCores, MaxClockSpeed | ConvertTo-Json")
 	return cmd
 }
 
-// deserializeProcessorInfo tenta desserializar o JSON como um único objeto ou uma lista de objetos ProcessorInfo
+// deserializeProcessorInfo desserializa os dados JSON em um ou mais objetos ProcessorInfo.
+//
+// Funcionalidade:
+// - Primeiro, tenta desserializar como um único objeto ProcessorInfo.
+// - Se falhar, tenta desserializar como um array de objetos ProcessorInfo.
+//
+// Parâmetros:
+// - data: Dados JSON a serem desserializados.
+//
+// Retorna:
+// - Um slice de ProcessorInfo contendo as informações dos processadores.
+// - Um erro, caso a desserialização falhe.
 func (p WindowsProcessorRetriever) deserializeProcessorInfo(data []byte) ([]ProcessorInfo, error) {
-	// Tenta deserializar o JSON como um único objeto
+	// Tenta desserializar o JSON como um único objeto
 	var singleProcessor ProcessorInfo
 	err := json.Unmarshal(data, &singleProcessor)
 	if err == nil {

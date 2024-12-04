@@ -1,3 +1,5 @@
+// Package security fornece funcionalidades para adicionar segurança a dados utilizando HMAC.
+// Este arquivo contém a implementação da função AddHMACToStruct para adicionar HMAC a structs.
 package security
 
 import (
@@ -11,7 +13,24 @@ import (
 	"goagente/internal/data/system"
 )
 
-// AddHMACToStruct adiciona o HMAC diretamente à struct, preservando a ordem dos campos
+// AddHMACToStruct adiciona um HMAC a uma struct específica, preservando a ordem dos campos.
+//
+// Funcionalidade:
+// - Serializa a struct em JSON, gerando um HMAC com base nos dados serializados e uma chave secreta.
+// - Adiciona o HMAC ao campo apropriado da struct.
+// - Serializa novamente a struct com o HMAC incluído.
+//
+// Parâmetros:
+// - data: Ponteiro para a struct que receberá o HMAC. Tipos suportados:
+//   - hardware.HardwareInfo
+//   - system.CoreInfoResult
+//   - programs.ProgramInfo
+//
+// - secret: Chave secreta utilizada para gerar o HMAC.
+//
+// Retorna:
+// - Uma string contendo a representação JSON da struct com o HMAC.
+// - Um erro, caso ocorra algum problema na serialização ou se o tipo da struct não for suportado.
 func AddHMACToStruct(data interface{}, secret string) (string, error) {
 	// Serializa o objeto para JSON (sem o HMAC)
 	jsonData, err := json.Marshal(data)
@@ -43,7 +62,14 @@ func AddHMACToStruct(data interface{}, secret string) (string, error) {
 	return string(finalJSON), nil
 }
 
-// Função para gerar o HMAC
+// generateHMAC gera um HMAC para os dados fornecidos usando a chave secreta.
+//
+// Parâmetros:
+// - data: Dados em formato de byte para os quais o HMAC será gerado.
+// - secret: Chave secreta utilizada para gerar o HMAC.
+//
+// Retorna:
+// - Uma string representando o HMAC gerado em formato hexadecimal.
 func generateHMAC(data []byte, secret string) string {
 	h := hmac.New(sha256.New, []byte(secret))
 	h.Write(data)
