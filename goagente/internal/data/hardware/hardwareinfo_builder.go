@@ -18,6 +18,7 @@ type HardwareInfo struct {
 	RAMModules  []RAM           `json:"ram"`         // Informações dos módulos de RAM
 	Motherboard MotherboardInfo `json:"motherboard"` // Informações da placa-mãe
 	HMAC        string          `json:"hmac"`        // Hash de integridade (sempre no final)
+	Os          string          `json:"os"`
 }
 
 // HardwareInfoBuilder fornece um padrão Builder para construir objetos HardwareInfo.
@@ -33,6 +34,11 @@ type HardwareInfoBuilder struct {
 //
 // Retorna:
 // - Uma referência ao próprio Builder.
+func (b *HardwareInfoBuilder) SetOs(os string) *HardwareInfoBuilder {
+	b.hardware.Os = os
+	return b
+}
+
 func (b *HardwareInfoBuilder) SetPatrimonio(patrimonio string) *HardwareInfoBuilder {
 	b.hardware.Patrimonio = patrimonio
 	return b

@@ -37,12 +37,14 @@ func (p *InfoPoster) PostInfo(route string, jsonData string, infoType string) er
 		return err
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Resultado JSON:", jsonData)
-		fmt.Printf("Erro ao enviar as informações de %s para o servidor.\n", infoType)
-		newErr := fmt.Errorf("erro ao enviar as informações de %s para o servidor, rota: %s, status: %s", infoType, route, resp.Status)
-		logging.Error(newErr)
-		return newErr
+	if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
+		if resp.StatusCode == http.StatusBadRequest || resp.StatusCode >= http.StatusInternalServerError {
+			fmt.Println("Resultado JSON:", jsonData)
+			fmt.Printf("Erro ao enviar as informações de %s para o servidor.\n", infoType)
+			newErr := fmt.Errorf("erro ao enviar as informações de %s para o servidor, rota: %s, status: %s", infoType, route, resp.Status)
+			logging.Error(newErr)
+			return newErr
+		}
 	}
 
 	fmt.Println("Resposta do servidor:", resp.Status)

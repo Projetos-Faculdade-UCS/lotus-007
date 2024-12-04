@@ -5,7 +5,7 @@ package system
 import (
 	"fmt"
 	"goagente/internal/logging"
-	"os/user"
+	"os/exec"
 	"strings"
 )
 
@@ -19,22 +19,27 @@ type WindowsUserRetriever struct{}
 // - Uma string representando o nome do usuário atual.
 // - Um erro, caso a coleta falhe.
 func (WindowsUserRetriever) GetCurrentUser() (string, error) {
-	currentUser, err := user.Current()
+	user, err := getInteractiveUser()
 	if err != nil {
-		newErr := fmt.Errorf("erro ao obter o usuário atual no Windows: %v", err)
-		logging.Error(newErr)
+		logging.Error(fmt.Errorf("erro ao obter o usuário interativo: %w", err))
+
 		return "", err
+	} else {
+		return user, nil
+	}
+}
+
+func getInteractiveUser() (string, error) {
+	cmd := exec.Command("powershell", "-Command", `(Get-WmiObject -Class Win32_ComputerSystem).UserName`)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("erro ao executar o comando PowerShell: %w", err)
 	}
 
-	username := currentUser.Username
-	// Verifica se o nome do usuário contém um domínio (formato DOMAIN\Username)
-	if strings.Contains(username, "\\") {
-		parts := strings.Split(username, "\\")
-		if len(parts) > 0 {
-			// Retorna apenas o nome de usuário, ignorando o domínio
-			return parts[len(parts)-1], nil
-		}
+	user := strings.TrimSpace(string(output))
+	if user == "" {
+		return "", fmt.Errorf("nenhum usuário interativo encontrado")
 	}
 
-	return username, nil
+	return user, nil
 }

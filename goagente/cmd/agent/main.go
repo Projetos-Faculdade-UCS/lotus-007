@@ -29,7 +29,7 @@ func main() {
 	}()
 
 	// Inicializa o cliente de comunicação com a API
-	client := communication.NewAPIClient("http://localhost:8000")
+	client := communication.NewAPIClient("http://174.138.83.238:8000")
 	poster := communication.NewInfoPoster(client) // Cria um InfoPoster para enviar informações à API
 
 	// Define a chave secreta para operações seguras
@@ -62,7 +62,7 @@ func main() {
 	programLoop := &orchestration.ProgramOrchestrationLoop{
 		OrchestrationLoop: orchestration.OrchestrationLoop{
 			Mediator: programMediator,
-			Interval: 10 * time.Second, // Intervalo de 10 segundos
+			Interval: 60 * time.Second, // Intervalo de 10 segundos
 		},
 	}
 

@@ -3,9 +3,10 @@
 package orchestration
 
 import (
-	"goagente/internal/data/hardware"   // Importa as estruturas de dados relacionadas ao hardware
-	"goagente/internal/data/patrimonio" // Importa as funcionalidades para tratar informações de patrimônio
-	"goagente/internal/logging"         // Importa a funcionalidade de logging
+	"goagente/internal/data/hardware" // Importa as estruturas de dados relacionadas ao hardware
+	"goagente/internal/data/patrimonio"
+	"goagente/internal/data/system" // Importa as funcionalidades para tratar informações de patrimônio
+	"goagente/internal/logging"     // Importa a funcionalidade de logging
 )
 
 // HardwareOrchestrator é responsável por orquestrar a criação do objeto HardwareInfo.
@@ -55,6 +56,13 @@ func (h *HardwareOrchestrator) autoPopulate(builder *hardware.HardwareInfoBuilde
 		return err
 	}
 	builder.SetPatrimonio(pat)
+
+	osRetriever, _ := system.NewOSRetriever()
+	os, err := osRetriever.GetCurrentOS()
+	if err != nil {
+		logging.Error(err)
+	}
+	builder.SetOs(os)
 
 	// Coleta as informações de RAM
 	ramRetriever, err := hardware.NewRAMRetriever()

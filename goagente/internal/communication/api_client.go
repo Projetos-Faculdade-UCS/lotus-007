@@ -138,7 +138,7 @@ func (c *APIClient) sendRequest(req *http.Request) (*http.Response, error) {
 // - Um erro, se o código de status for menor que 200 ou maior ou igual a 300.
 // - Nil, se o código de status for válido.
 func checkResponseStatus(resp *http.Response) error {
-	if resp.StatusCode < 200 || resp.StatusCode >= 399 {
+	if resp.StatusCode >= 399 {
 		return fmt.Errorf("resposta HTTP com erro. Status: %d, URL: %s", resp.StatusCode, resp.Request.URL.String())
 	}
 	return nil
