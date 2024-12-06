@@ -22,6 +22,7 @@ O **Lotus-007** é desenvolvido utilizando uma arquitetura **N-Tier** (em camada
 - **Segurança**: Implementa funcionalidades de segurança, incluindo autenticação e criptografia dos dados transmitidos.
 - **Logging**: Registra logs de eventos e operações importantes, facilitando o monitoramento do agente e a solução de problemas.
 - **Comunicação**: Gerencia a comunicação entre o agente e a API/backend, transmitindo os dados capturados de forma segura.
+- **Service**: Camada responsavel por criar os serviço e remover ele de um sistema operacional.
 
 ## Tecnologias Utilizadas
 
@@ -30,17 +31,19 @@ O **Lotus-007** é desenvolvido utilizando uma arquitetura **N-Tier** (em camada
 - **Arquitetura**: N-Tier (em camadas)
 - **Segurança**: Implementação de HMAC para validação de dados e SSL para criptografia de comunicação.
 
-## Como Usar
+### Como usar
+Para utilizar o **Lotus-007**, siga os passos abaixo:
 
-1. Clone o repositório:
-   git clone https://github.com/usuario/Lotus-007.git
-   cd Lotus-007
+1. **Baixe o Instalador**  
+   - Faça o download do instalador do agente no formato MSI: **`AgenteLotusApresentacao.msi`**.  
 
-2. Compile o agente:
-   go build -o lotus-agent main.go
+2. **Execute o Instalador**  
+   - Execute o instalador no seu sistema operacional Windows. O instalador criará o serviço necessário para o funcionamento do agente automaticamente.
 
-3. Execute o agente:
-   ./lotus-agent
+3. **Modo Debug**  
+   - Na primeira execução, o agente será iniciado em modo debug, abrindo uma janela de terminal onde é possível visualizar as informações de log em tempo real.  
+
+**Nota:** O agente ainda possui um problema relacionado a permissões de leitura e escrita no Windows, que será corrigido em futuras versões.
 
 ## Contribuindo
 
